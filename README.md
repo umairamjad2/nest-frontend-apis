@@ -170,8 +170,8 @@ nestjs-frontend/
 - [ ] Check: register → click the email link → log in → reload the page and stay logged in
 
 ### Phase 4 – Password reset
-- [ ] `/forgot-password`
-- [ ] `/reset-password` reads `token` from the URL
+- [x] `/forgot-password`
+- [x] `/reset-password` reads `token` from the URL
 - [ ] Check: the reset email link opens the page, and the new password works
 
 ### Phase 5 – Protected pages
