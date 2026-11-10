@@ -1,4 +1,4 @@
-import { AuthStatus } from '@/components/auth-status';
+import { HomeActions } from '@/components/home-actions';
 
 export default function Home() {
   return (
@@ -6,10 +6,10 @@ export default function Home() {
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">NestJS Auth</h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-          Frontend for the nestjs-learning backend. Use the links above to register or log in.
+          Register, verify your email, and log in. Built with Next.js on top of the nestjs-learning backend.
         </p>
       </div>
-      <AuthStatus />
+      <HomeActions />
     </main>
   );
 }

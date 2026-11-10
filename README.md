@@ -175,9 +175,10 @@ nestjs-frontend/
 - [ ] Check: the reset email link opens the page, and the new password works
 
 ### Phase 5 – Protected pages
-- [ ] Guest and protected route groups with guards
-- [ ] `/dashboard`
-- [ ] `/profile` with the name edit form
+- [x] Guest and protected route groups with guards
+- [x] `/dashboard`
+- [x] `/profile` with the name edit form
+- [x] After login, return to the page the user first asked for (`/login?next=...`)
 - [ ] Check: opening `/dashboard` while logged out redirects to `/login`
 
 ### Phase 6 – Admin

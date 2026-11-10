@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/context/auth-context';
@@ -14,7 +13,6 @@ import { Input } from '@/components/ui/input';
 
 export function LoginForm() {
   const { login } = useAuth();
-  const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -29,9 +27,9 @@ export function LoginForm() {
   async function onSubmit(values: LoginFormValues) {
     setServerError(null);
     try {
+      // No redirect here: once logged in, GuestGuard (app/(guest)/layout.tsx)
+      // sends the user to ?next= or /dashboard.
       await login(values);
-      // TODO (Phase 5): go to /dashboard once it exists.
-      router.replace('/');
     } catch (error) {
       // The backend's 401 message says whether the password was wrong
       // or the email isn't verified yet, so show it as it is.

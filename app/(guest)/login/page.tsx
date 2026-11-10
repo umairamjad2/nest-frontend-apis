@@ -5,6 +5,10 @@ import { LoginForm } from '@/components/auth/login-form';
 
 export const metadata: Metadata = { title: 'Log in · NestJS Auth' };
 
+// Shown only after the browser confirms nobody is logged in (GuestGuard), so it
+// can't be rendered ahead of time. Opt out of instant-navigation validation.
+export const instant = false;
+
 export default function LoginPage() {
   return (
     <AuthCard
