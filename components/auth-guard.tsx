@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
+import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 
@@ -44,6 +45,34 @@ export function ProtectedGuard({ children }: { children: ReactNode }) {
   // Wait for the startup refresh before deciding; don't flash the page while redirecting.
   if (status !== 'authenticated') {
     return <PageSpinner />;
+  }
+  return children;
+}
+
+/** Shown to a logged-in user who opens a page they don't have the role for. */
+export function Forbidden() {
+  return (
+    <div className="flex flex-col items-start gap-3 py-12">
+      <p className="text-sm font-medium text-zinc-500">403</p>
+      <h1 className="text-3xl font-semibold tracking-tight">You don&apos;t have permission</h1>
+      <p className="text-zinc-600 dark:text-zinc-400">This page is for administrators only.</p>
+      <Link href="/dashboard" className="text-sm font-medium underline-offset-4 hover:underline">
+        Back to dashboard
+      </Link>
+    </div>
+  );
+}
+
+/**
+ * For admin pages. Must sit inside ProtectedGuard, so the user is already loaded.
+ * Shows a 403 message instead of redirecting, so the user knows why.
+ * The backend also returns 403 for non-admins, so this is only for the UI.
+ */
+export function AdminGuard({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+
+  if (user?.role !== 'ADMIN') {
+    return <Forbidden />;
   }
   return children;
 }
