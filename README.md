@@ -163,10 +163,10 @@ nestjs-frontend/
 - [ ] Check: the browser network tab shows `POST /auth/refresh` on page load with no CORS error
 
 ### Phase 3 – Register and login
-- [ ] `/register` page and form validation
-- [ ] `/login` page
-- [ ] Navbar with log in / log out
-- [ ] Logout calls `POST /auth/logout`, then clears the context
+- [x] `/register` page and form validation
+- [x] `/login` page
+- [x] Navbar with log in / log out
+- [x] Logout calls `POST /auth/logout`, then clears the context
 - [ ] Check: register → click the email link → log in → reload the page and stay logged in
 
 ### Phase 4 – Password reset
