@@ -5,6 +5,8 @@ import { z } from 'zod';
 
 const email = z.email('Enter a valid email address');
 
+const name = z.string().trim().min(1, 'Name is required').max(100, 'Name must be at most 100 characters');
+
 const password = z
   .string()
   .min(8, 'Password must be at least 8 characters')
@@ -12,7 +14,7 @@ const password = z
 
 export const registerSchema = z
   .object({
-    name: z.string().trim().min(1, 'Name is required').max(100, 'Name must be at most 100 characters'),
+    name,
     email,
     password,
     confirmPassword: z.string(),
@@ -48,3 +50,8 @@ export const resetPasswordSchema = z
   });
 
 export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+
+// PATCH /users/:id accepts only the name.
+export const profileSchema = z.object({ name });
+
+export type ProfileFormValues = z.infer<typeof profileSchema>;

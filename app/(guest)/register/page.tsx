@@ -5,6 +5,10 @@ import { RegisterForm } from '@/components/auth/register-form';
 
 export const metadata: Metadata = { title: 'Register · NestJS Auth' };
 
+// Shown only after the browser confirms nobody is logged in (GuestGuard), so it
+// can't be rendered ahead of time. Opt out of instant-navigation validation.
+export const instant = false;
+
 // A server component (so it can export metadata) that renders the client-side form.
 export default function RegisterPage() {
   return (

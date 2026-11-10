@@ -50,7 +50,18 @@ export function Navbar() {
 
         {status === 'authenticated' && user && (
           <div className="flex items-center gap-4">
-            <span className="hidden text-sm text-zinc-600 sm:inline dark:text-zinc-400">
+            <Link href="/dashboard" className={linkClass}>
+              Dashboard
+            </Link>
+            <Link href="/profile" className={linkClass}>
+              Profile
+            </Link>
+            {user.role === 'ADMIN' && (
+              <Link href="/admin/users" className={linkClass}>
+                Users
+              </Link>
+            )}
+            <span className="hidden text-sm text-zinc-600 md:inline dark:text-zinc-400">
               {user.name}
               {user.role === 'ADMIN' && (
                 <span className="ml-2 rounded bg-zinc-200 px-1.5 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200">

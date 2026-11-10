@@ -5,6 +5,10 @@ import { ForgotPasswordForm } from '@/components/auth/forgot-password-form';
 
 export const metadata: Metadata = { title: 'Forgot password · NestJS Auth' };
 
+// Shown only after the browser confirms nobody is logged in (GuestGuard), so it
+// can't be rendered ahead of time. Opt out of instant-navigation validation.
+export const instant = false;
+
 export default function ForgotPasswordPage() {
   return (
     <AuthCard
