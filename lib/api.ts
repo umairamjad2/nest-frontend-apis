@@ -43,11 +43,26 @@ export function setSessionExpiredHandler(handler: (() => void) | null) {
 
 let refreshPromise: Promise<string> | null = null;
 
+/**
+ * Runs `fn` while holding a lock shared by every tab of this site (Web Locks API).
+ * The refresh cookie is shared by all tabs, so two tabs refreshing at once would
+ * send the same token twice and the backend would end the session. With the lock,
+ * the second tab waits, then sends the new cookie the first tab received.
+ */
+async function withCrossTabLock<T>(fn: () => Promise<T>): Promise<T> {
+  if (typeof navigator !== 'undefined' && navigator.locks) {
+    // The lock is held until fn's promise settles.
+    return await navigator.locks.request('auth-refresh', fn);
+  }
+  return fn(); // very old browsers: per-tab protection only
+}
+
 export function refreshAccessToken(): Promise<string> {
   if (!refreshPromise) {
-    // Plain axios, not `api`, so a failed refresh doesn't trigger the 401 interceptor below.
-    refreshPromise = axios
-      .post<TokenResponse>(`${API_URL}/auth/refresh`, null, { withCredentials: true })
+    refreshPromise = withCrossTabLock(() =>
+      // Plain axios, not `api`, so a failed refresh doesn't trigger the 401 interceptor below.
+      axios.post<TokenResponse>(`${API_URL}/auth/refresh`, null, { withCredentials: true }),
+    )
       .then((res) => {
         setAccessToken(res.data.access_token);
         return res.data.access_token;
@@ -93,6 +108,14 @@ api.interceptors.response.use(
     }
 
     original._retried = true;
+
+    // The request left with an old token, and another refresh has finished since.
+    // Retry with the current token instead of starting another refresh.
+    const sentHeader = original.headers.Authorization;
+    if (accessToken && sentHeader !== `Bearer ${accessToken}`) {
+      original.headers.Authorization = `Bearer ${accessToken}`;
+      return api(original);
+    }
 
     try {
       const token = await refreshAccessToken();
