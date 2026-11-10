@@ -31,3 +31,20 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
+
+export const forgotPasswordSchema = z.object({ email });
+
+export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+
+// The reset token comes from the URL, not the form, so it isn't in this schema.
+export const resetPasswordSchema = z
+  .object({
+    newPassword: password,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
+
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
