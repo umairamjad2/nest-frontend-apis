@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export function LoginForm() {
-  const { login } = useAuth();
+  const { login, sessionExpired } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -40,6 +40,9 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
       {serverError && <Alert type="error">{serverError}</Alert>}
+      {!serverError && sessionExpired && (
+        <Alert type="error">Your session has expired. Please log in again.</Alert>
+      )}
 
       <Input
         label="Email"

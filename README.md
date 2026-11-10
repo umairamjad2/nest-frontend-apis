@@ -12,6 +12,7 @@ This file is the build plan. Each phase ends with something you can run and test
 | **Tailwind CSS** | Styling |
 | **axios** | HTTP client; interceptors make the refresh-and-retry logic simple |
 | **react-hook-form** + **zod** | Forms with the same rules as the backend DTOs |
+| **Vitest** | Unit tests (same as the backend) |
 | **pnpm** | Package manager (same as the backend) |
 
 ## How It Connects to the Backend
@@ -187,10 +188,30 @@ nestjs-frontend/
 - [ ] Check: a USER sees 403; an ADMIN (set in Prisma Studio) sees the list
 
 ### Phase 7 – Polish
-- [ ] Loading and error states on every form
-- [ ] `429` message
-- [ ] Test token expiry: wait 15 minutes (or shorten the backend's `expiresIn` while testing), then make a request. It should refresh silently.
-- [ ] Test reuse: log in on two browsers. The first one should be logged out on its next refresh (the backend allows one session per user).
+- [x] Loading and error states on every form
+- [x] `429` message
+- [x] Cross-tab refresh lock (Web Locks API): two tabs can't send the same refresh token at once
+- [x] Tabs stay in sync: logging in or out in one tab updates the others (BroadcastChannel)
+- [x] "Your session has expired" message on the login page when a session ends on its own
+- [x] Don't refresh again when a request fails with a token that has already been replaced
+- [x] 404 page
+- [x] Unit tests (Vitest) for the refresh logic, redirects, error messages and form rules
+- [ ] Manual test – token expiry: wait 15 minutes (or shorten the backend's `expiresIn` while testing), then make a request. It should refresh silently.
+- [ ] Manual test – one session per user: log in on two different browsers. The first one should show "Your session has expired" on its next refresh.
+
+## Running Tests
+
+```bash
+pnpm test         # run once
+pnpm test:watch   # re-run on save
+```
+
+The tests use a fake backend, so the NestJS server doesn't need to be running.
+
+| File | Covers |
+|---|---|
+| `lib/api.test.ts` | Bearer header, refresh-and-retry, one shared refresh for parallel 401s, logout when refresh fails, no refresh loop, no refresh on a wrong-password 401, cross-tab lock |
+| `lib/helpers.test.ts` | Safe `?next=` redirects, error messages, form validation rules |
 
 ## Running Both Apps
 
@@ -212,4 +233,4 @@ pnpm dev
 - Backend: stop an admin deleting their own account in `DELETE /users/:id` (the UI already disables it)
 - Generate TypeScript types from Swagger (`/api-json`) with `openapi-typescript`
 - Change password and change email pages, once the backend supports them
-- Tests with Vitest and React Testing Library, and Playwright for the full login flow
+- Component tests with React Testing Library, and Playwright for the full login flow
