@@ -182,8 +182,8 @@ nestjs-frontend/
 - [ ] Check: opening `/dashboard` while logged out redirects to `/login`
 
 ### Phase 6 – Admin
-- [ ] Admin layout guard and `/forbidden`
-- [ ] `/admin/users` table and delete
+- [x] Admin layout guard (shows a 403 message in place of the page, instead of a separate `/forbidden` route)
+- [x] `/admin/users` table and delete with a confirm dialog (your own row can't be deleted)
 - [ ] Check: a USER sees 403; an ADMIN (set in Prisma Studio) sees the list
 
 ### Phase 7 – Polish
@@ -208,6 +208,8 @@ pnpm dev
 
 - Backend: redirect `/auth/verify-email` to a frontend `/verify-email?status=success` page instead of returning JSON
 - Backend: return `name` from `/auth/profile` so the frontend needs one call instead of two
+- Backend: return `role` and `isEmailVerified` from `GET /users`, so the admin table can show them
+- Backend: stop an admin deleting their own account in `DELETE /users/:id` (the UI already disables it)
 - Generate TypeScript types from Swagger (`/api-json`) with `openapi-typescript`
 - Change password and change email pages, once the backend supports them
 - Tests with Vitest and React Testing Library, and Playwright for the full login flow
