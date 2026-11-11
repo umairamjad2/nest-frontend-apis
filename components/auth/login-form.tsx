@@ -10,6 +10,7 @@ import { loginSchema, type LoginFormValues } from '@/lib/schemas';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 
 export function LoginForm() {
   const { login, sessionExpired } = useAuth();
@@ -52,9 +53,8 @@ export function LoginForm() {
         {...register('email')}
       />
       <div className="flex flex-col gap-1.5">
-        <Input
+        <PasswordInput
           label="Password"
-          type="password"
           autoComplete="current-password"
           error={errors.password?.message}
           {...register('password')}

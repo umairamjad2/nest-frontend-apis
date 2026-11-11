@@ -10,6 +10,7 @@ import { registerSchema, type RegisterFormValues } from '@/lib/schemas';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 
 export function RegisterForm() {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -70,16 +71,14 @@ export function RegisterForm() {
         error={errors.email?.message}
         {...register('email')}
       />
-      <Input
+      <PasswordInput
         label="Password"
-        type="password"
         autoComplete="new-password"
         error={errors.password?.message}
         {...register('password')}
       />
-      <Input
+      <PasswordInput
         label="Confirm password"
-        type="password"
         autoComplete="new-password"
         error={errors.confirmPassword?.message}
         {...register('confirmPassword')}
