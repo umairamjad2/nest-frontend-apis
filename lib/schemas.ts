@@ -55,3 +55,15 @@ export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 export const profileSchema = z.object({ name });
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
+
+// Same limits as the backend's CreateTaskDto.
+export const taskSchema = z.object({
+  title: z.string().trim().min(1, 'Title is required').max(200, 'Title must be at most 200 characters'),
+  description: z.string().trim().max(2000, 'Description must be at most 2000 characters'),
+  status: z.enum(['TODO', 'IN_PROGRESS', 'DONE']),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH']),
+  // From <input type="date">: "YYYY-MM-DD", or "" for no due date
+  dueDate: z.union([z.literal(''), z.iso.date('Enter a valid date')]),
+});
+
+export type TaskFormValues = z.infer<typeof taskSchema>;

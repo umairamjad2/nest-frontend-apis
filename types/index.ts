@@ -59,3 +59,61 @@ export interface ResetPasswordInput {
 export interface UpdateUserInput {
   name: string;
 }
+
+// --- Tasks -------------------------------------------------------------------
+
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'DONE';
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+
+/** Returned by the /tasks endpoints. Dates are ISO strings. */
+export interface Task {
+  id: number;
+  title: string;
+  description: string | null;
+  status: TaskStatus;
+  priority: TaskPriority;
+  dueDate: string | null;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** GET /tasks */
+export interface TaskListResponse {
+  items: Task[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+/** GET /tasks/stats */
+export interface TaskStats {
+  total: number;
+  todo: number;
+  inProgress: number;
+  done: number;
+  overdue: number;
+}
+
+export type TaskSortField = 'createdAt' | 'dueDate' | 'priority';
+
+/** Query string for GET /tasks. Undefined values are left out. */
+export interface TaskQuery {
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  search?: string;
+  sortBy?: TaskSortField;
+  order?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+}
+
+/** POST /tasks and PATCH /tasks/:id. null clears description or dueDate. */
+export interface TaskInput {
+  title: string;
+  description: string | null;
+  status: TaskStatus;
+  priority: TaskPriority;
+  dueDate: string | null;
+}
