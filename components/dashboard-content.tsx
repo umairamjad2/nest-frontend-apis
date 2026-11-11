@@ -30,6 +30,7 @@ export function DashboardContent() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
+        <Card href="/tasks" title="Your tasks" description="Plan your work, set due dates and track what's done." />
         <Card href="/profile" title="Your profile" description="View your account details and change your name." />
         {user.role === 'ADMIN' && (
           <Card href="/admin/users" title="Manage users" description="See every account and delete users." />
