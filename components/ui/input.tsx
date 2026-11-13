@@ -35,7 +35,7 @@ export function Input({
           name={name}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
-          className={`h-10 w-full rounded-md border bg-white px-3 text-sm outline-none transition-colors focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10 dark:bg-zinc-900 dark:focus:border-zinc-100 dark:focus:ring-zinc-100/10 ${
+          className={`h-10 w-full rounded-md border bg-white px-3 text-sm outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/25 dark:bg-zinc-900 ${
             error ? 'border-red-500' : 'border-zinc-300 dark:border-zinc-700'
           } ${endAdornment ? 'pr-10' : ''} ${className}`}
           {...props}

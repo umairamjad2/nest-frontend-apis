@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { UsersTable } from '@/components/admin/users-table';
 
-export const metadata: Metadata = { title: 'Users · NestJS Auth' };
+export const metadata: Metadata = { title: 'Users' };
 
 // Shown only after the browser restores the session and confirms the ADMIN role,
 // so it can't be rendered ahead of time. Opt out of instant-navigation validation.

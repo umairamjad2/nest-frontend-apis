@@ -6,8 +6,7 @@ interface ButtonProps extends ComponentProps<'button'> {
 }
 
 const variants = {
-  primary:
-    'bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300',
+  primary: 'bg-brand font-semibold text-brand-foreground hover:bg-brand-hover',
   secondary:
     'border border-zinc-300 bg-white hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800',
   danger: 'bg-red-600 text-white hover:bg-red-700',
