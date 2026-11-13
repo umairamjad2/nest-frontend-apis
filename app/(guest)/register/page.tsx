@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { AuthCard } from '@/components/auth/auth-card';
 import { RegisterForm } from '@/components/auth/register-form';
 
-export const metadata: Metadata = { title: 'Register · NestJS Auth' };
+export const metadata: Metadata = { title: 'Register' };
 
 // Shown only after the browser confirms nobody is logged in (GuestGuard), so it
 // can't be rendered ahead of time. Opt out of instant-navigation validation.

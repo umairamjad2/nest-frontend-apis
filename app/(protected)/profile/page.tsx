@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { ProfileForm } from '@/components/profile-form';
 
-export const metadata: Metadata = { title: 'Profile · NestJS Auth' };
+export const metadata: Metadata = { title: 'Profile' };
 
 // This page is only shown once the browser has restored the session (ProtectedGuard),
 // so Next.js can't render it ahead of time. Opt out of instant-navigation validation.

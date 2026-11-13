@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { AuthCard } from '@/components/auth/auth-card';
 import { ResetPasswordForm } from '@/components/auth/reset-password-form';
 
-export const metadata: Metadata = { title: 'Reset password · NestJS Auth' };
+export const metadata: Metadata = { title: 'Reset password' };
 
 // The backend emails links to exactly this path: /reset-password?token=...
 // Public (not in the guest group): a logged-in user may also follow a reset link.

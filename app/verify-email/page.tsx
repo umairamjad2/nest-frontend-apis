@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { AuthCard } from '@/components/auth/auth-card';
 import { VerifyEmailStatus } from '@/components/auth/verify-email-status';
 
-export const metadata: Metadata = { title: 'Verify email · NestJS Auth' };
+export const metadata: Metadata = { title: 'Verify email' };
 
 // The backend emails links to exactly this path: /verify-email?token=...
 // Public (not in the guest group), like /reset-password.
