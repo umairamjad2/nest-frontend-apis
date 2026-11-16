@@ -21,6 +21,12 @@ export async function login(input: LoginInput) {
   return data;
 }
 
+/** Creates a temporary demo account with sample tasks and logs it in. */
+export async function startDemo() {
+  const { data } = await api.post<LoginResponse>('/auth/demo');
+  return data;
+}
+
 export async function logout() {
   const { data } = await api.post<MessageResponse>('/auth/logout');
   return data;

@@ -11,6 +11,7 @@ import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
+import { DemoButton } from '@/components/demo-button';
 
 export function LoginForm() {
   const { login, sessionExpired } = useAuth();
@@ -70,6 +71,17 @@ export function LoginForm() {
       <Button type="submit" loading={isSubmitting} className="mt-2">
         Log in
       </Button>
+
+      <div className="flex items-center gap-3 text-xs text-zinc-500" aria-hidden>
+        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+        or
+        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+      </div>
+      {/* No redirect: GuestGuard sends the logged-in user on, like a normal login */}
+      <DemoButton
+        redirectTo={null}
+        className="h-10 rounded-md border border-brand-line bg-brand-soft text-sm text-brand-text hover:border-brand"
+      />
     </form>
   );
 }

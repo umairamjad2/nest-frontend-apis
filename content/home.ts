@@ -21,6 +21,7 @@ export const homeContent = {
     guest: {
       primary: { label: 'Create an account', href: '/register' },
       secondary: { label: 'Log in', href: '/login' },
+      demo: { label: 'Try the demo', note: 'No sign-up needed' },
     },
     member: {
       primary: { label: 'Go to dashboard', href: '/dashboard' },

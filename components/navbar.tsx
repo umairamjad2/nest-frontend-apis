@@ -7,6 +7,7 @@ import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { guestLinks, memberLinks, navLabels, siteName } from '@/content/navigation';
+import { isDemoUser } from '@/lib/demo';
 
 const linkClass = 'text-sm transition-colors hover:text-zinc-900 dark:hover:text-zinc-100';
 const inactiveClass = 'text-zinc-600 dark:text-zinc-400';
@@ -30,7 +31,7 @@ export function Navbar() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [menuOpen]);
 
-  async function handleLogout() {
+  async function handleLogout(to: string = guestLinks.login.href) {
     setLoggingOut(true);
     try {
       await logout();
@@ -39,9 +40,12 @@ export function Navbar() {
     } finally {
       setLoggingOut(false);
       setMenuOpen(false);
-      router.replace('/login');
+      router.replace(to);
     }
   }
+
+  // Leave the demo and go to the register page
+  const handleSignUp = () => handleLogout(guestLinks.register.href);
 
   const closeMenu = () => setMenuOpen(false);
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
@@ -97,7 +101,7 @@ export function Navbar() {
                 {user.name}
                 {isAdmin && adminBadge}
               </span>
-              <Button variant="secondary" loading={loggingOut} onClick={handleLogout} className="h-8 px-3">
+              <Button variant="secondary" loading={loggingOut} onClick={() => handleLogout()} className="h-8 px-3">
                 {navLabels.logout}
               </Button>
             </>
@@ -125,6 +129,15 @@ export function Navbar() {
         </div>
       </nav>
 
+      {isDemoUser(user) && (
+        <div className="border-t border-brand-line bg-brand-soft px-4 py-2 text-center text-xs text-brand-text sm:text-sm">
+          You&apos;re using a demo account. It&apos;s deleted after 24 hours.{' '}
+          <button type="button" onClick={handleSignUp} className="font-semibold underline underline-offset-2">
+            Create your own account
+          </button>
+        </div>
+      )}
+
       {/* Mobile menu panel */}
       {menuOpen && status !== 'loading' && (
         <div id="mobile-menu" className="border-t border-zinc-200 px-4 pt-2 pb-4 md:hidden dark:border-zinc-800">
@@ -150,7 +163,7 @@ export function Navbar() {
                   </li>
                 ))}
               </ul>
-              <Button variant="secondary" loading={loggingOut} onClick={handleLogout} className="mt-3 w-full">
+              <Button variant="secondary" loading={loggingOut} onClick={() => handleLogout()} className="mt-3 w-full">
                 {navLabels.logout}
               </Button>
             </>
