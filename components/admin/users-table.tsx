@@ -9,6 +9,7 @@ import type { UserDetails } from '@/types';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { useToast } from '@/components/ui/toast';
 import { PageSpinner } from '@/components/auth-guard';
 
 export function UsersTable() {
@@ -19,7 +20,7 @@ export function UsersTable() {
 
   const [userToDelete, setUserToDelete] = useState<UserDetails | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [notice, setNotice] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const toast = useToast();
 
   // Fetches the list and returns what to store. State is set in .then() below,
   // after the request finishes, not synchronously inside the effect.
@@ -53,14 +54,14 @@ export function UsersTable() {
     try {
       await deleteUser(target.id);
       setUsers((current) => current?.filter((u) => u.id !== target.id) ?? null);
-      setNotice({ type: 'success', text: `Deleted ${target.name} (${target.email}).` });
+      toast.success(`Deleted ${target.name} (${target.email}).`);
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 404) {
         // Someone else deleted it first; just take it off the list.
         setUsers((current) => current?.filter((u) => u.id !== target.id) ?? null);
-        setNotice({ type: 'error', text: `${target.email} had already been deleted.` });
+        toast.error(`${target.email} had already been deleted.`);
       } else {
-        setNotice({ type: 'error', text: getErrorMessage(error) });
+        toast.error(getErrorMessage(error));
       }
     } finally {
       setDeleting(false);
@@ -85,8 +86,6 @@ export function UsersTable() {
 
   return (
     <div className="flex flex-col gap-4">
-      {notice && <Alert type={notice.type}>{notice.text}</Alert>}
-
       <p className="text-sm text-zinc-500">
         {users.length} {users.length === 1 ? 'user' : 'users'}
       </p>
@@ -125,10 +124,7 @@ export function UsersTable() {
                       className="h-8 px-3 text-red-600 dark:text-red-400"
                       disabled={isMe}
                       title={isMe ? "You can't delete your own account" : undefined}
-                      onClick={() => {
-                        setNotice(null);
-                        setUserToDelete(u);
-                      }}
+                      onClick={() => setUserToDelete(u)}
                     >
                       Delete
                     </Button>

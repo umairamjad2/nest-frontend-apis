@@ -19,6 +19,8 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { EmptyState } from '@/components/ui/empty-state';
+import { useToast } from '@/components/ui/toast';
 import { PageSpinner } from '@/components/auth-guard';
 import { TaskFormDialog } from './task-form-dialog';
 import { TaskItem } from './task-item';
@@ -42,8 +44,6 @@ const STATUS_TABS: { value: StatusFilter; label: string; count: (s: TaskStats) =
   { value: 'DONE', label: 'Done', count: (s) => s.done },
 ];
 
-type Notice = { type: 'success' | 'error'; text: string };
-
 /** The result of one list request, tagged with the query it answers. */
 type ListResult = { key: string; data: TaskListResponse | null; error: string | null };
 
@@ -63,7 +63,7 @@ export function TasksBoard() {
   const [stats, setStats] = useState<TaskStats | null>(null);
 
   // Actions
-  const [notice, setNotice] = useState<Notice | null>(null);
+  const toast = useToast();
   const [editing, setEditing] = useState<Task | 'new' | null>(null);
   const [toDelete, setToDelete] = useState<Task | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -133,13 +133,6 @@ export function TasksBoard() {
     return () => clearTimeout(id);
   }, [searchInput, search]);
 
-  // Success messages fade after a few seconds; errors stay until the next action
-  useEffect(() => {
-    if (notice?.type !== 'success') return;
-    const id = setTimeout(() => setNotice(null), 4000);
-    return () => clearTimeout(id);
-  }, [notice]);
-
   const reload = () => setReloadKey((k) => k + 1);
   const loading = result?.key !== queryKey;
   const data = result?.data ?? null;
@@ -155,7 +148,6 @@ export function TasksBoard() {
 
   async function toggleDone(task: Task) {
     const nextStatus: TaskStatus = task.status === 'DONE' ? 'TODO' : 'DONE';
-    setNotice(null);
     setTogglingId(task.id);
     // Show the change straight away; the reload below brings the real state.
     setResult((r) =>
@@ -165,8 +157,9 @@ export function TasksBoard() {
     );
     try {
       await updateTask(task.id, { status: nextStatus });
+      if (nextStatus === 'DONE') toast.success(`Nice! "${task.title}" is done.`);
     } catch (error) {
-      setNotice({ type: 'error', text: getErrorMessage(error) });
+      toast.error(getErrorMessage(error));
     } finally {
       setTogglingId(null);
       reload();
@@ -179,12 +172,12 @@ export function TasksBoard() {
     setDeleting(true);
     try {
       await deleteTask(target.id);
-      setNotice({ type: 'success', text: `Deleted "${target.title}".` });
+      toast.success(`Deleted "${target.title}".`);
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 404) {
-        setNotice({ type: 'error', text: 'That task had already been deleted.' });
+        toast.error('That task had already been deleted.');
       } else {
-        setNotice({ type: 'error', text: getErrorMessage(error) });
+        toast.error(getErrorMessage(error));
       }
     } finally {
       setDeleting(false);
@@ -195,7 +188,7 @@ export function TasksBoard() {
 
   function handleSaved(task: Task, mode: 'created' | 'updated') {
     setEditing(null);
-    setNotice({ type: 'success', text: mode === 'created' ? `Created "${task.title}".` : 'Changes saved.' });
+    toast.success(mode === 'created' ? `Created "${task.title}".` : 'Changes saved.');
     if (mode === 'created') setPage(1);
     reload();
   }
@@ -212,12 +205,8 @@ export function TasksBoard() {
             )}
           </p>
         </div>
-        <Button
-          onClick={() => {
-            setNotice(null);
-            setEditing('new');
-          }}
-        >
+        <Button onClick={() => setEditing('new')}>
+          <span aria-hidden className="-ml-0.5 text-lg leading-none">+</span>
           New task
         </Button>
       </div>
@@ -291,8 +280,6 @@ export function TasksBoard() {
         </Select>
       </div>
 
-      {notice && <Alert type={notice.type}>{notice.text}</Alert>}
-
       {result?.error && !loading ? (
         <div className="flex flex-col items-start gap-3">
           <Alert type="error">Couldn&apos;t load tasks: {result.error}</Alert>
@@ -303,43 +290,36 @@ export function TasksBoard() {
       ) : !data ? (
         <PageSpinner />
       ) : data.items.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
-          {hasFilters ? (
-            <>
-              <p className="font-medium">No tasks match these filters.</p>
-              <Button variant="secondary" className="mt-4" onClick={clearFilters}>
+        hasFilters ? (
+          <EmptyState
+            icon="search"
+            title="No tasks match these filters"
+            description="Try a different search, or clear the filters to see all your tasks."
+            action={
+              <Button variant="secondary" onClick={clearFilters}>
                 Clear filters
               </Button>
-            </>
-          ) : (
-            <>
-              <p className="font-medium">No tasks yet.</p>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                Add your first one to start tracking your work.
-              </p>
-              <Button className="mt-4" onClick={() => setEditing('new')}>
-                Create a task
-              </Button>
-            </>
-          )}
-        </div>
+            }
+          />
+        ) : (
+          <EmptyState
+            icon="tasks"
+            title="No tasks yet"
+            description="Add your first task with a priority and a due date, and TaskNest will keep track of it for you."
+            action={<Button onClick={() => setEditing('new')}>Create your first task</Button>}
+          />
+        )
       ) : (
         <div className={`flex flex-col gap-4 transition-opacity ${loading ? 'opacity-60' : ''}`} aria-busy={loading}>
-          <ul className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+          <ul className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
             {data.items.map((task) => (
               <TaskItem
                 key={task.id}
                 task={task}
                 toggling={togglingId === task.id}
                 onToggleDone={toggleDone}
-                onEdit={(t) => {
-                  setNotice(null);
-                  setEditing(t);
-                }}
-                onDelete={(t) => {
-                  setNotice(null);
-                  setToDelete(t);
-                }}
+                onEdit={setEditing}
+                onDelete={setToDelete}
               />
             ))}
           </ul>

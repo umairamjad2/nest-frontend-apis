@@ -10,6 +10,7 @@ import { getUser, updateUser } from '@/lib/users-api';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/toast';
 
 function Detail({ label, value }: { label: string; value: string }) {
   return (
@@ -24,7 +25,7 @@ export function ProfileForm() {
   const { user, reloadUser } = useAuth();
   const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
+  const toast = useToast();
 
   const {
     register,
@@ -50,14 +51,13 @@ export function ProfileForm() {
   async function onSubmit(values: ProfileFormValues) {
     if (!user) return;
     setServerError(null);
-    setSaved(false);
     try {
       // Only `name`: the backend rejects role, email and password here.
       const updated = await updateUser(user.id, { name: values.name });
       // Update the navbar and dashboard, and make the new name the form's saved value.
       await reloadUser();
       reset({ name: updated.name });
-      setSaved(true);
+      toast.success('Your name has been updated.');
     } catch (error) {
       setServerError(getErrorMessage(error));
     }
@@ -77,7 +77,6 @@ export function ProfileForm() {
         <h2 className="font-medium">Change your name</h2>
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-4 flex flex-col gap-4">
           {serverError && <Alert type="error">{serverError}</Alert>}
-          {saved && <Alert type="success">Your name has been updated.</Alert>}
 
           <Input label="Name" autoComplete="name" error={errors.name?.message} {...register('name')} />
 
