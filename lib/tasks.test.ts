@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { taskSchema } from './schemas';
-import { formatDueDate, isOverdue, toDateInputValue } from './tasks';
+import { daysUntil, describeDue, formatDueDate, isOverdue, toDateInputValue } from './tasks';
 
 const now = new Date('2026-11-11T12:00:00Z');
 
@@ -47,5 +47,28 @@ describe('taskSchema', () => {
 
   it('accepts a real date', () => {
     expect(taskSchema.safeParse({ ...valid, dueDate: '2026-12-01' }).success).toBe(true);
+  });
+});
+
+describe('describeDue', () => {
+  it.each([
+    ['2026-11-09T00:00:00.000Z', 'TODO', 'Overdue · 2 days', 'overdue'],
+    ['2026-11-10T00:00:00.000Z', 'IN_PROGRESS', 'Overdue · 1 day', 'overdue'],
+    ['2026-11-11T00:00:00.000Z', 'TODO', 'Due today', 'soon'],
+    ['2026-11-12T00:00:00.000Z', 'TODO', 'Due tomorrow', 'soon'],
+    ['2026-11-15T00:00:00.000Z', 'TODO', 'Due in 4 days', 'normal'],
+    ['2026-11-01T00:00:00.000Z', 'DONE', undefined, 'done'], // finished: plain date, never "overdue"
+  ] as const)('due %s, %s', (dueDate, status, text, tone) => {
+    const result = describeDue({ dueDate, status }, now);
+    expect(result?.tone).toBe(tone);
+    if (text) expect(result?.text).toBe(text);
+  });
+
+  it('returns null without a due date', () => {
+    expect(describeDue({ dueDate: null, status: 'TODO' }, now)).toBeNull();
+  });
+
+  it('counts calendar days in UTC, not hours', () => {
+    expect(daysUntil('2026-11-12T00:00:00.000Z', new Date('2026-11-11T23:59:00Z'))).toBe(1);
   });
 });

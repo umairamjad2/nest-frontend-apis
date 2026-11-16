@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/auth-context";
 import { Navbar } from "@/components/navbar";
+import { ToastProvider } from "@/components/ui/toast";
 import { THEME_SCRIPT } from "@/lib/theme";
 import { siteName } from "@/content/navigation";
 
@@ -43,10 +44,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col">
-        <AuthProvider>
-          <Navbar />
-          {children}
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <Navbar />
+            {children}
+          </AuthProvider>
+        </ToastProvider>
       </body>
     </html>
   );

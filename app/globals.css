@@ -19,6 +19,11 @@
   --brand-gradient-from: #3ecf8e;
   --brand-gradient-to: #2f8f63;
 
+  /* Task-status chart colours (checked for colour-blind separation) */
+  --chart-todo: #e3a23b;
+  --chart-progress: #6b7cf0;
+  --chart-done: #3fb27f;
+
   color-scheme: light;
 }
 
@@ -35,6 +40,10 @@
   --brand-gradient-from: #3ecf8e;
   --brand-gradient-to: #2f9e6c;
 
+  --chart-todo: #c08424;
+  --chart-progress: #6f7fec;
+  --chart-done: #3ca574;
+
   color-scheme: dark;
 }
 
@@ -47,6 +56,10 @@
   --color-brand-text: var(--brand-text);
   --color-brand-soft: var(--brand-soft);
   --color-brand-line: var(--brand-line);
+  --color-chart-todo: var(--chart-todo);
+  --color-chart-progress: var(--chart-progress);
+  --color-chart-done: var(--chart-done);
+  --animate-toast-in: toast-in 0.2s ease-out;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display-face);
@@ -69,6 +82,13 @@
   h2 {
     font-family: var(--font-display), var(--font-sans), sans-serif;
     letter-spacing: -0.02em;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.98);
   }
 }
 
