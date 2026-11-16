@@ -24,10 +24,24 @@ const display = Bricolage_Grotesque({
   weight: ["600", "700", "800"],
 });
 
+const description = "Plan your work, track your tasks and keep your account secure.";
+
+// Shared links need absolute image URLs. Vercel sets VERCEL_PROJECT_PRODUCTION_URL;
+// NEXT_PUBLIC_SITE_URL overrides it (e.g. for a custom domain).
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3001");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   // Pages set only their own title ("Tasks"); the template adds the site name.
   title: { default: siteName, template: `%s · ${siteName}` },
-  description: "Plan your work, track your tasks and keep your account secure.",
+  description,
+  // The preview image comes from app/opengraph-image.tsx
+  openGraph: { type: "website", siteName, title: siteName, description },
+  twitter: { card: "summary_large_image", title: siteName, description },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
