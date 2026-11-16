@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useAuth } from '@/context/auth-context';
 import { homeContent } from '@/content/home';
+import { DemoButton } from '@/components/demo-button';
 
 const primary =
   'inline-flex h-11 items-center justify-center rounded-lg bg-brand px-6 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand-hover';
@@ -32,14 +33,20 @@ export function HomeActions() {
   }
 
   return (
-    // Full-width stacked buttons on phones, side by side from the sm breakpoint
-    <div className="flex flex-col gap-3 sm:flex-row">
-      <Link href={guest.primary.href} className={primary}>
-        {guest.primary.label}
-      </Link>
-      <Link href={guest.secondary.href} className={secondary}>
-        {guest.secondary.label}
-      </Link>
+    <div className="flex flex-col gap-3">
+      {/* Full-width stacked buttons on phones, side by side from the sm breakpoint */}
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <DemoButton className={`${primary} ring-4 ring-brand/20`} />
+        <Link href={guest.primary.href} className={secondary}>
+          {guest.primary.label}
+        </Link>
+      </div>
+      <p className="text-sm text-zinc-500">
+        {guest.demo.note} ·{' '}
+        <Link href={guest.secondary.href} className="font-medium text-zinc-700 underline-offset-4 hover:underline dark:text-zinc-300">
+          {guest.secondary.label}
+        </Link>
+      </p>
     </div>
   );
 }

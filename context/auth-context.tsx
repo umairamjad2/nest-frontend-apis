@@ -15,6 +15,8 @@ interface AuthContextValue {
   /** True when the session ended on its own (not by logging out), so the login page can say why. */
   sessionExpired: boolean;
   login: (input: LoginInput) => Promise<void>;
+  /** Starts a throwaway demo account (POST /auth/demo). */
+  loginDemo: () => Promise<void>;
   logout: () => Promise<void>;
   /** Reload the user, e.g. after changing the name. */
   reloadUser: () => Promise<void>;
@@ -105,6 +107,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [reloadUser],
   );
 
+  const loginDemo = useCallback(async () => {
+    const { access_token } = await authApi.startDemo();
+    setAccessToken(access_token);
+    await reloadUser();
+    notifyOtherTabs('login');
+  }, [reloadUser]);
+
   const logout = useCallback(async () => {
     try {
       await authApi.logout();
@@ -116,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [clearSession]);
 
   return (
-    <AuthContext value={{ status, user, sessionExpired, login, logout, reloadUser }}>
+    <AuthContext value={{ status, user, sessionExpired, login, loginDemo, logout, reloadUser }}>
       {children}
     </AuthContext>
   );

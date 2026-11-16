@@ -24,6 +24,20 @@ import { useToast } from '@/components/ui/toast';
 import { PageSpinner } from '@/components/auth-guard';
 import { TaskFormDialog } from './task-form-dialog';
 import { TaskItem } from './task-item';
+import { KanbanBoard } from './kanban-board';
+
+type View = 'list' | 'board';
+const VIEW_STORAGE_KEY = 'tasks-view';
+
+// This board only renders in the browser (after the session restores), so
+// reading localStorage in the initial state is safe.
+function readSavedView(): View {
+  try {
+    return localStorage.getItem(VIEW_STORAGE_KEY) === 'board' ? 'board' : 'list';
+  } catch {
+    return 'list';
+  }
+}
 
 const PAGE_SIZE = 10;
 
@@ -48,6 +62,8 @@ const STATUS_TABS: { value: StatusFilter; label: string; count: (s: TaskStats) =
 type ListResult = { key: string; data: TaskListResponse | null; error: string | null };
 
 export function TasksBoard() {
+  const [view, setView] = useState<View>(readSavedView);
+
   // Filters
   const [status, setStatus] = useState<StatusFilter>('ALL');
   const [priority, setPriority] = useState<'ALL' | TaskPriority>('ALL');
@@ -84,9 +100,25 @@ export function TasksBoard() {
 
   const queryKey = `${JSON.stringify(query)}#${reloadKey}`;
 
+  // The board shows every status in its own column, so it shares only these filters
+  const boardFilters = useMemo(
+    () => ({ priority: query.priority, search: query.search, sortBy: query.sortBy, order: query.order }),
+    [query.priority, query.search, query.sortBy, query.order],
+  );
+
+  function changeView(next: View) {
+    setView(next);
+    try {
+      localStorage.setItem(VIEW_STORAGE_KEY, next);
+    } catch {
+      // Private mode: the choice just isn't remembered
+    }
+  }
+
   // Fetch the list whenever the query changes. Results for an older query are
   // dropped, so a slow response can't overwrite a newer one.
   useEffect(() => {
+    if (view !== 'list') return; // the board fetches its own columns
     let cancelled = false;
     listTasks(query).then(
       (data) => {
@@ -105,7 +137,7 @@ export function TasksBoard() {
     return () => {
       cancelled = true;
     };
-  }, [query, queryKey]);
+  }, [query, queryKey, view]);
 
   useEffect(() => {
     let cancelled = false;
@@ -205,14 +237,17 @@ export function TasksBoard() {
             )}
           </p>
         </div>
-        <Button onClick={() => setEditing('new')}>
-          <span aria-hidden className="-ml-0.5 text-lg leading-none">+</span>
-          New task
-        </Button>
+        <div className="flex items-center gap-3">
+          <ViewToggle view={view} onChange={changeView} />
+          <Button onClick={() => setEditing('new')}>
+            <span aria-hidden className="-ml-0.5 text-lg leading-none">+</span>
+            New task
+          </Button>
+        </div>
       </div>
 
-      {/* Status tabs with counts */}
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by status">
+      {/* Status tabs with counts (the board has a column per status instead) */}
+      <div className={`flex flex-wrap gap-2 ${view === 'board' ? 'hidden' : ''}`} role="group" aria-label="Filter by status">
         {STATUS_TABS.map((tab) => {
           const active = status === tab.value;
           return (
@@ -280,7 +315,18 @@ export function TasksBoard() {
         </Select>
       </div>
 
-      {result?.error && !loading ? (
+      {view === 'board' ? (
+        // Wider than the page column on large screens, so three columns fit comfortably
+        <div className="lg:-mx-28">
+          <KanbanBoard
+            filters={boardFilters}
+            reloadKey={reloadKey}
+            onChanged={reload}
+            onEdit={setEditing}
+            onDelete={setToDelete}
+          />
+        </div>
+      ) : result?.error && !loading ? (
         <div className="flex flex-col items-start gap-3">
           <Alert type="error">Couldn&apos;t load tasks: {result.error}</Alert>
           <Button variant="secondary" onClick={reload}>
@@ -376,6 +422,36 @@ export function TasksBoard() {
           </>
         )}
       </ConfirmDialog>
+    </div>
+  );
+}
+
+const viewIcons: Record<View, React.ReactNode> = {
+  list: <path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" />,
+  board: <path d="M4 5h4v14H4zM10 5h4v9h-4zM16 5h4v11h-4z" />,
+};
+
+function ViewToggle({ view, onChange }: { view: View; onChange: (view: View) => void }) {
+  return (
+    <div className="inline-flex rounded-md border border-zinc-300 p-0.5 dark:border-zinc-700" role="group" aria-label="View">
+      {(['list', 'board'] as const).map((option) => (
+        <button
+          key={option}
+          type="button"
+          aria-pressed={view === option}
+          onClick={() => onChange(option)}
+          className={`inline-flex h-8 items-center gap-1.5 rounded px-2.5 text-sm capitalize transition-colors ${
+            view === option
+              ? 'bg-zinc-900 font-medium text-white dark:bg-zinc-100 dark:text-zinc-900'
+              : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+          }`}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-4" aria-hidden>
+            {viewIcons[option]}
+          </svg>
+          {option}
+        </button>
+      ))}
     </div>
   );
 }
