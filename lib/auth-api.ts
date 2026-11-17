@@ -1,5 +1,8 @@
 import { api } from './api';
 import type {
+  ChangePasswordInput,
+  RevokeSessionsResponse,
+  SessionInfo,
   LoginInput,
   LoginResponse,
   MessageResponse,
@@ -59,5 +62,34 @@ export function verifyEmail(token: string) {
 
 export async function resetPassword(input: ResetPasswordInput) {
   const { data } = await api.post<MessageResponse>('/auth/reset-password', input);
+  return data;
+}
+
+/** Signs out every other device; this one stays logged in. */
+export async function changePassword(input: ChangePasswordInput) {
+  const { data } = await api.post<MessageResponse>('/auth/change-password', input);
+  return data;
+}
+
+export async function listSessions() {
+  const { data } = await api.get<SessionInfo[]>('/auth/sessions');
+  return data;
+}
+
+/** Signs out one device. */
+export async function revokeSession(id: string) {
+  const { data } = await api.delete<MessageResponse>(`/auth/sessions/${id}`);
+  return data;
+}
+
+/** Signs out every device except this one. */
+export async function revokeOtherSessions() {
+  const { data } = await api.delete<RevokeSessionsResponse>('/auth/sessions');
+  return data;
+}
+
+/** Deletes the logged-in user's account. Use useAuth().deleteAccount, which also ends the session here. */
+export async function deleteAccount(password: string) {
+  const { data } = await api.delete<MessageResponse>('/auth/account', { data: { password } });
   return data;
 }
