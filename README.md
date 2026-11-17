@@ -4,12 +4,16 @@
 
 A full-stack task manager: a **Next.js 16** frontend (this repo) on top of a **NestJS + Prisma + PostgreSQL** API, with real-world authentication (JWT access and refresh tokens, email verification, password reset and roles).
 
-- 🔗 **Live demo:** https://nest-frontend-apis.vercel.app
+- 🔗 **Live demo:** https://nest-frontend-apis.vercel.app (click **Try the demo**, no sign-up needed)
 - ⚙️ **Backend repo:** https://github.com/umairamjad2/nest-backend-apis
 
 ![TaskNest preview](docs/screenshots/preview.png)
 
 ## Screenshots
+
+**Kanban board:** drag cards between columns to change their status
+
+![Kanban board with To do, In progress and Done columns](docs/screenshots/board.png)
 
 | Dashboard | Tasks |
 |---|---|
@@ -23,6 +27,7 @@ A full-stack task manager: a **Next.js 16** frontend (this repo) on top of a **N
 
 **Tasks**
 - Create, edit, complete and delete tasks
+- List view or a drag-and-drop Kanban board, with arrow buttons on touch screens
 - Priority (low, medium, high) and due dates, with labels like "Due tomorrow" and "Overdue · 2 days"
 - Search, filter by status or priority, sort, and paginate
 
@@ -31,6 +36,7 @@ A full-stack task manager: a **Next.js 16** frontend (this repo) on top of a **N
 - Progress bar split by status, and a list of upcoming deadlines
 
 **Accounts and security**
+- One-click demo: each visitor gets their own temporary account with sample tasks. It's deleted after 24 hours, and demo creation is rate-limited
 - Register, verify email, log in, and reset a forgotten password
 - The access token is kept only in memory. The refresh token is an `httpOnly` cookie that rotates on every refresh, and parallel 401 responses share one refresh
 - Admin role with a user-management page
