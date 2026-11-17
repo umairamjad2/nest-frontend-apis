@@ -51,6 +51,29 @@ export const resetPasswordSchema = z
 
 export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Enter your current password'),
+    newPassword: password,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  })
+  .refine((data) => data.newPassword !== data.currentPassword, {
+    message: 'The new password must be different from the current one',
+    path: ['newPassword'],
+  });
+
+export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
+
+export const deleteAccountSchema = z.object({
+  password: z.string().min(1, 'Enter your password to confirm'),
+});
+
+export type DeleteAccountFormValues = z.infer<typeof deleteAccountSchema>;
+
 // PATCH /users/:id accepts only the name.
 export const profileSchema = z.object({ name });
 

@@ -18,6 +18,12 @@ interface AuthContextValue {
   /** Starts a throwaway demo account (POST /auth/demo). */
   loginDemo: () => Promise<void>;
   logout: () => Promise<void>;
+  /**
+   * Deletes the account (needs the password) and logs out every tab.
+   * Doesn't change the auth state here: the caller navigates away with a full page load,
+   * so the protected pages don't first redirect to /login.
+   */
+  deleteAccount: (password: string) => Promise<void>;
   /** Reload the user, e.g. after changing the name. */
   reloadUser: () => Promise<void>;
 }
@@ -124,8 +130,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [clearSession]);
 
+  const deleteAccount = useCallback(async (password: string) => {
+    await authApi.deleteAccount(password);
+    // The backend has cleared the refresh cookie; drop the token and tell other tabs.
+    setAccessToken(null);
+    notifyOtherTabs('logout');
+  }, []);
+
   return (
-    <AuthContext value={{ status, user, sessionExpired, login, loginDemo, logout, reloadUser }}>
+    <AuthContext value={{ status, user, sessionExpired, login, loginDemo, logout, deleteAccount, reloadUser }}>
       {children}
     </AuthContext>
   );

@@ -84,9 +84,6 @@ export function ProfileForm() {
             Save
           </Button>
         </form>
-        <p className="mt-4 text-sm text-zinc-500">
-          Email and password can&apos;t be changed here. To change your password, log out and use “Forgot password?”.
-        </p>
       </section>
     </div>
   );

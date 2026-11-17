@@ -40,7 +40,9 @@ A full-stack task manager: a **Next.js 16** frontend (this repo) on top of a **N
 - Register, verify email, log in, and reset a forgotten password
 - The access token is kept only in memory. The refresh token is an `httpOnly` cookie that rotates on every refresh, and parallel 401 responses share one refresh
 - Admin role with a user-management page
-- One session per user: logging in elsewhere ends the old session
+- Change password from the profile page (other devices get signed out)
+- Logged-in devices list: see where you're logged in and sign out any device, or all others at once
+- Delete your account, confirmed with your password
 
 **UI**
 - Dark and light themes that follow your system setting, with no flash on load

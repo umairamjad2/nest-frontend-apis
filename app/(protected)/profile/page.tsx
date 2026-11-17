@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ProfileForm } from '@/components/profile-form';
+import { AccountSettings } from '@/components/account/account-settings';
 
 export const metadata: Metadata = { title: 'Profile' };
 
@@ -12,9 +13,14 @@ export default function ProfilePage() {
     <div className="flex flex-col gap-8">
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Profile</h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">Your account details.</p>
+        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+          Your account details, password and logged-in devices.
+        </p>
       </div>
-      <ProfileForm />
+      <div className="flex flex-col gap-6">
+        <ProfileForm />
+        <AccountSettings />
+      </div>
     </div>
   );
 }

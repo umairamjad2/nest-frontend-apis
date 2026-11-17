@@ -60,6 +60,28 @@ export interface UpdateUserInput {
   name: string;
 }
 
+/** POST /auth/change-password */
+export interface ChangePasswordInput {
+  currentPassword: string;
+  newPassword: string;
+}
+
+/** GET /auth/sessions: one per logged-in device. */
+export interface SessionInfo {
+  id: string;
+  userAgent: string | null;
+  ipAddress: string | null;
+  createdAt: string;
+  lastUsedAt: string;
+  /** The device making the request (this browser). */
+  current: boolean;
+}
+
+/** DELETE /auth/sessions */
+export interface RevokeSessionsResponse extends MessageResponse {
+  count: number;
+}
+
 // --- Tasks -------------------------------------------------------------------
 
 export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'DONE';
